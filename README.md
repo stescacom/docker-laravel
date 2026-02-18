@@ -1,4 +1,6 @@
-# Docker Laravel For Production & Local Development
+# Docker Laravel with MongoDB For Production & Local Development
+
+> Ensure source code folder exists outside this repo or update the path accordingly.
 
 First check if the envirnment variables `$UID`and `$GID` are set, if not run the following command
 ```
