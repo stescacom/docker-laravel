@@ -1,0 +1,38 @@
+services:
+
+
+  #MongoDB Service
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - "./_docker/dbdata:/data/db"
+    networks:
+      - php-web-network
+
+  # nginx dev port mapping and config
+  nginx-webserver:
+    ports:
+      - 8080:80
+      - 8100:8100
+      - 8101:8101
+    volumes:
+      - "../:/var/www"
+      - "./_docker/nginx/dev.conf.d/:/etc/nginx/conf.d/"
+
+  mailpit:
+    image: axllent/mailpit
+    restart: unless-stopped
+    logging:
+      driver: "none" # disable saving logs
+    ports:
+      - 1026:1025 # smtp server
+      - 8026:8025 # web ui
+    networks:
+      - php-web-network
