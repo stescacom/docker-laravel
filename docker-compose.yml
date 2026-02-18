@@ -1,0 +1,47 @@
+services:
+
+  php:
+    build: 
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+          - UID=${UID:-1000}
+          - GID=${GID:-1000}
+    image: stesca/php-laravel:latest
+    command: sh -c "service supervisor start && exec php-fpm"
+    restart: unless-stopped
+    tty: true
+    user: root
+    ports:
+      - 6001:6001
+      - 9000:9000
+    working_dir: /var/www/api
+    volumes:
+      - "../:/var/www" # <------- ensure api folder exists outside this repo
+      - "./_docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini"
+      - "./_docker/supervisor:/etc/supervisor/conf.d/"
+    networks:
+      - php-web-network
+
+  #Nginx Service
+  # Ports and config are define on environment based files
+  nginx-webserver:
+    depends_on:
+      - php
+    build:
+      context: ./dockerfiles
+      dockerfile: nginx.dockerfile
+      args:
+          - UID=${UID:-1000}
+          - GID=${GID:-1000}
+    image: nginx:alpine
+    restart: unless-stopped
+    tty: true
+    networks:
+      - php-web-network
+
+#Docker Networks
+networks:
+  php-web-network:
+    driver: bridge
+    name: app-network
