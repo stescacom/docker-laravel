@@ -1,0 +1,10 @@
+services:
+
+  # nginx overrides and port mapping
+  nginx-webserver:
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    ports:
+      - 80:80
+    volumes:
+      - ../:/var/www
+      - ./_docker/nginx/prod.conf.d/:/etc/nginx/conf.d/
